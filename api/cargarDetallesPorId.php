@@ -13,9 +13,11 @@ if($sqlNombre->execute([$_POST['idProducto']])):
 endif;
 
 
-$sql= $db->prepare("SELECT d.*, m.descripcion, m.tipo FROM `detalles` d
+$sql= $db->prepare("SELECT d.*, m.descripcion, m.tipo, pro.nombre as nomProveedor, t.nombre as nomTopico FROM `detalles` d
 inner join movimientos m on m.id = d.idMovimiento
-where d.activo = 1 and idProducto = ?;");
+inner join proveedores pro on pro.id = d.idProveedor
+inner join topicos t on t.id = d.idTopico
+where d.activo = 1 and idProducto = ? order by fecha desc, registro desc;");
 if( $sql->execute([ $_POST['idProducto'] ])){
 	while( $row = $sql->fetch(PDO::FETCH_ASSOC) ){
 		$filas[] = $row;

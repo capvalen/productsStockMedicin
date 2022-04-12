@@ -41,13 +41,14 @@
 			<div class="row col">
 				<div class="d-grid gap-2 d-md-flex justify-content-md-end">
 					<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCompras"><i class="bi bi-plus-square"></i> Agregar</button>
-					<button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalNuevoProducto"><i class="bi bi-dash-square"></i> Retirar</button>
+					<button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalRetiros"><i class="bi bi-dash-square"></i> Retirar</button>
 				</div>
 			</div>
 			<ul class="list-unstyled mb-3 mb-md-0">
+				<li><strong>Precio actual:</strong> S/ <span class="text-capitalize">{{parseFloat(principal.precio).toFixed(2)}}</span></li>
 				<li><strong>Stock actual:</strong> <span class="text-capitalize">{{principal.stock}}</span></li>
 				<li><strong>Presentación:</strong> <span class="text-capitalize">{{principal.presentacion}}</span></li>
-				<li><strong>Creado el:</strong> <span class="text-capitalize">{{fechaLatam(principal.creado)}}</span></li>
+				<li><strong>Creado el:</strong> <span class="text-capitalize">{{fechaLarga(principal.creado)}}</span></li>
 				<li><strong>Estado:</strong> <span class="text-capitalize">{{principal.activo=='1' ? 'Activo' : 'Desactivado' }}</span></li>
 			</ul>
 			<p class="h3 my-3">Movimientos realizados:</p>
@@ -65,35 +66,21 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>1</td>
-						<td>14/05/2022 6:00 pm</td>
-						<td>Ingreso</td>
-						<td><span class="text-primary">+20</span></td>
-						<td>FarmaIndustria</td>
-						<td>Almacen principal</td>
-						<td>50.00</td>
+					<tr v-for="(detalle, index) in detalles" :key="detalle.id">
+						<td>{{index+1}}</td>
+						<td>{{fechaLatam(detalle.fecha)}}</td>
+						<td>{{detalle.descripcion}}</td>
+						<td>
+							<span class="text-primary" v-if="detalle.tipo==1">+{{detalle.cantidad}}</span>
+							<span class="text-danger" v-else>-{{detalle.cantidad}}</span>
+						</td>
+						<td>{{detalle.nomProveedor}}</td>
+						<td>{{detalle.nomTopico}}</td>
+						<td>
+							<span v-if="detalle.tipo==1">{{parseFloat(detalle.costo).toFixed(2)}}</span>
+							<span v-else>{{parseFloat(detalle.costo * detalle.cantidad).toFixed(2)}}</span>
+						</td>
 						<td></td>
-					</tr>
-					<tr>
-						<td>2</td>
-						<td>13/04/2022 4:30 pm</td>
-						<td>Salida</td>
-						<td><span class="text-danger">-6</span></td>
-						<td>Almacén principal</td>
-						<td>Topico Colonial</td>
-						<td>0.00</td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>2</td>
-						<td>11/08/2021 4:18 am</td>
-						<td>Devolución</td>
-						<td><span class="text-warning">+3</span></td>
-						<td>Almacén principal</td>
-						<td>Topico Colonial</td>
-						<td>0.00</td>
-						<td>Por fecha vencimiento</td>
 					</tr>
 				</tbody>
 			</table>
@@ -122,7 +109,7 @@
 
 							<div class="mb-3">
 								<label for="">Proveedor</label>
-								<select class="form-select" aria-label="¿Qué proveedor es?" v-model="proveedor">
+								<select class="form-select" id="sltProveedor" aria-label="¿Qué proveedor es?" v-model="proveedor">
 									<option v-for="provider in proveedores" :key="provider.id" :value="provider.id">{{provider.nombre}}</option>
 								</select>
 							</div>
@@ -140,21 +127,78 @@
 							</div>
 							<div class="mb-3">
 								<label for="">N° Documento</label>
-								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="documentos">
+								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="documento">
 							</div>
 							<div class="mb-3">
 								<label for="">Observaciones</label>
-								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="observaciones">
+								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="observacion">
 							</div>
 
 						</div>
 
 						<div class="d-grid gap-2 d-md-flex justify-content-md-end">
 							
-							<button type="button" class="btn btn-primary">Guardar</button>
+							<button type="button" class="btn btn-primary" @click="guardarCompra()" >Guardar</button>
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<!-- Modal para agregar movimiento de salidas -->
+		<div class="modal fade" id="modalRetiros" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+			<div class="modal-dialog modal-sm" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="d-flex justify-content-between ">
+							<h5 class="modal-title">Realizar una distribución</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						
+						<div class="my-3">
+							<div class="mb-3">
+								<label for="">Egreso</label>
+								<input type="date" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="ingreso">
+							</div>
+							<div class="mb-3">
+								<label for="">Cantidad</label>
+								<input type="number" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="cantidad">
+							</div>
+
+							<div class="mb-3">
+								<label for="">Tópico destino</label>
+								<select class="form-select" id="sltDestino" aria-label="¿Qué proveedor es?" v-model="destino">
+									<option v-for="destino in destinos" :key="destino.id" :value="destino.id">{{destino.nombre}}</option>
+								</select>
+							</div>
+							<div class="mb-3">
+								<label for="">N° Documento</label>
+								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="documento">
+							</div>
+							<div class="mb-3">
+								<label for="">Observaciones</label>
+								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="observacion">
+							</div>
+
+						</div>
+
+						<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+							
+							<button type="button" class="btn btn-primary" @click="guardarRetiro()" >Guardar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1051">
+			<div class="toast align-items-center text-white bg-danger border-0" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true">
+			  <div class="d-flex">
+			    <div class="toast-body">
+						<i class="bi bi-bug"></i> {{mensaje}}
+			    </div>
+			    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+			  </div>
 			</div>
 		</div>
 		
@@ -167,21 +211,23 @@
 <script src="https://unpkg.com/vue@3"></script>
 <!-- <script src="./js/moment-with-locales.min.js"></script> -->
 <script>
-	var modalCompras;
+	var modalCompras, modalRetiros, liveToast;
+	var idUsuario =1;
 	var app=Vue.createApp({
 		data() {
 			return {
 				servidor: 'http://localhost/productosMedicina/api/', id:'',
 				principal:[], detalles:[],
-				cantidad:'', precio:0, proveedores:[], destinos:[],
+				cantidad: 0, precio:0, proveedores:[], destinos:[],
 				proveedor:2, destino: 2,  //  <-- ninguno
-				lote:'', vencimiento:'', observaciones:'', documentos:'', ingreso:moment().format('YYYY-MM-DD')
+				lote:'', vencimiento:'', observacion:'', documento:'', ingreso:moment().format('YYYY-MM-DD'),
+				mensaje:''
 			}
 		},
 		created(){
 			let uri = window.location.search.substring(1); 
-	    let params = new URLSearchParams(uri);
-	    //console.log(params.get('id'));
+			let params = new URLSearchParams(uri);
+			//console.log(params.get('id'));
 			this.id= params.get('id');
 			this.principal.nombre = ''
 			this.pedirTopicos();
@@ -189,6 +235,8 @@
 		},
 		mounted(){
 			modalCompras = new bootstrap.Modal(document.getElementById('modalCompras'));
+			modalRetiros = new bootstrap.Modal(document.getElementById('modalRetiros'));
+			liveToast = new bootstrap.Toast(document.getElementById('liveToast'));
 		},
 		methods:{
 			async pedirTopicos(){
@@ -212,10 +260,106 @@
 				
 				//modalNuevoProducto.show();
 			},
-			fechaLatam(fechita){
+			fechaLarga(fechita){
 				moment.locale('es');
 				return moment(fechita, 'YYYY-MM-DD').format('dddd DD [de] MMMM [de] YYYY')
-			}
+			},
+			fechaLatam(fechita){
+				moment.locale('es');
+				return moment(fechita, 'YYYY-MM-DD').format('DD/MM/YYYY')
+			},
+			async guardarCompra(){
+				if(this.cantidad=='' || this.cantidad==0){
+					this.mensaje="La cantidad no puede ser 0"; liveToast.show();
+				}else{
+					let datosEnviar = new FormData();
+					datosEnviar.append('id', this.id);
+					datosEnviar.append('origen', this.proveedor);
+					datosEnviar.append('destino', 1); //almacen principal
+					datosEnviar.append('ingreso', this.ingreso);
+					datosEnviar.append('cantidad', this.cantidad);
+					datosEnviar.append('precio', this.precio);
+					datosEnviar.append('lote', this.lote);
+					datosEnviar.append('vencimiento', this.vencimiento);
+					datosEnviar.append('documento', this.documento);
+					datosEnviar.append('observacion', this.observacion);
+					datosEnviar.append('movimiento', 1); //ingreso
+					datosEnviar.append('usuario', idUsuario); //ingreso
+	
+					let queryGuardar = await fetch(this.servidor+'guardarDetalle.php',{
+						method:'POST', body: datosEnviar
+					})
+					let respGuardar = await queryGuardar.text().then(response=>{
+						//console.log( response );
+						this.detalles.unshift({
+							id: response,
+							idProducto:this.id,
+							idProveedor: this.proveedor,
+							idMovimiento: 1, //ingreso
+							tipo: 1, //suma
+							descripcion: 'Ingreso',
+							cantidad: this.cantidad,
+							fecha: this.ingreso,
+							registro: moment().format('YYYY-MM-DD HH:mm:ss'),
+							idUsuario,
+							activo:1,
+							costo: this.precio,
+							lote: this.lote,
+							vencimiento: this.vencimiento,
+							documento: this.documento,
+							observaciones: this.observacion,
+							nomTopico: 'Almacén principal',
+							nomProveedor: document.getElementById('sltProveedor').options[document.getElementById('sltProveedor').selectedIndex].text
+						})
+						modalCompras.hide()
+					});
+				}
+			},
+			async guardarRetiro(){
+				if(this.cantidad=='' || this.cantidad==0){
+					this.mensaje="La cantidad no puede ser 0"; liveToast.show();
+				}else{
+					let datosEnviar = new FormData();
+					datosEnviar.append('id', this.id);
+					datosEnviar.append('origen', 1);//almacen principal
+					datosEnviar.append('destino', this.destino);
+					datosEnviar.append('ingreso', this.ingreso);
+					datosEnviar.append('cantidad', this.cantidad);
+					datosEnviar.append('precio', this.principal.precio);
+					datosEnviar.append('documento', this.documento);
+					datosEnviar.append('observacion', this.observacion);
+					datosEnviar.append('movimiento', 2); //ingreso
+					datosEnviar.append('usuario', idUsuario); //ingreso
+	
+					let queryGuardar = await fetch(this.servidor+'guardarSalidaDetalle.php',{
+						method:'POST', body: datosEnviar
+					})
+					let respGuardar = await queryGuardar.text().then(response=>{
+						//console.log( response );
+						this.detalles.unshift({
+							id: response,
+							idProducto:this.id,
+							idProveedor: 1, //almacén principal
+							idMovimiento: 2, //ingreso
+							tipo: 0, //suma
+							descripcion: 'Salida',
+							cantidad: this.cantidad,
+							fecha: this.ingreso,
+							registro: moment().format('YYYY-MM-DD HH:mm:ss'),
+							idUsuario,
+							activo:1,
+							costo: this.principal.precio,
+							lote: '',
+							vencimiento: '',
+							documento: this.documento,
+							observaciones: this.observacion,
+							nomTopico: document.getElementById('sltDestino').options[document.getElementById('sltDestino').selectedIndex].text,
+							nomProveedor: 'Almacén principal'
+						})
+						modalRetiros.hide()
+					});
+				}
+			},
 			
 
 		},
