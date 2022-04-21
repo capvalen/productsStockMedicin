@@ -10,7 +10,6 @@ if($resp){
 	//echo 'ok';
 	echo $db->lastInsertId();
 	
-
 	$sqlSuma = $db->prepare("UPDATE `productos` SET `stock`= `stock` - ? WHERE `id`= ?; ");
 	$sqlSuma->execute([ $_POST['cantidad'], $_POST['id']]);
 
