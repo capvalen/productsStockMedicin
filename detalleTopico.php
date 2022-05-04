@@ -5,6 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Tópicos</title>
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 </head>
@@ -25,11 +26,19 @@
 							<a class="nav-link active" href="topicos.php">Tópicos</a>
 						</li>
 						<li class="nav-item">
+							<a class="nav-link" href="pedidos.php">Pedidos</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="requerimientos.php">Requerimientos</a>
+						</li><li class="nav-item">
+							<a class="nav-link" href="requerimientos.php">Requerimientos</a>
+						</li>
+						<li class="nav-item">
 							<a class="nav-link" href="#">Reportes</a>
 						</li>
 						
 					</ul>
-					<div class="d-flex">
+					<div class="d-flex d-none">
 						<input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" v-model="txtBuscar" @keyup.enter="buscarProducto()" @change="cambioBuscador()">
 						<button class="btn btn-outline-success" @click="buscarProducto()">Buscar</button>
 					</div>
@@ -37,7 +46,7 @@
 			</div>
 		</nav>
 		<div class="container">
-			<h1>Detalle de tópico <small class="text-muted text-capitalize">{{principal.nombre.toLowerCase()}}</small></h1>
+			<h1>Detalle de tópico: <small class="text-muted text-capitalize">{{principal.nombre.toLowerCase()}}</small></h1>
 			
 			<ul class="list-unstyled mb-3 mb-md-0">
 				<li><strong>Valorizado en productos:</strong> S/ <span class="text-capitalize">{{parseFloat(principal.valorizado).toFixed(2)}}</span></li>
@@ -116,8 +125,11 @@
 								<td>{{fechaLatam(inventario.fecha)}}</td>
 								<td class="text-capitalize">{{inventario.articulo.toLowerCase()}}</td>
 								<td>
-									<span v-if="inventario.descripcion=='Salida'">Entrada</span>
-									<span v-else>{{inventario.descripcion}}</span>
+									<button class="btn btn-outline-danger btn-sm border-0" @click="borrarInventariO(inventario.id, inventario.articulo, index)"><i class="bi bi-x-circle-fill"></i></button> 
+									<span>
+										<span v-if="inventario.descripcion=='Salida'">Entrada</span>
+										<span v-else>{{inventario.descripcion}}</span>
+									</span>
 								</td>
 								<td>
 									<span class="text-danger" v-if="inventario.tipo==1">-{{inventario.cantidad}}</span>
@@ -258,7 +270,9 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/', id:'',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				id:'',
 				principal:[{nombre: '', valorizado:0}], detalles:[], inventarios:[],
 				cantidad: 1, precio:0, proveedores:[], destinos:[],
 				proveedor:2, destino: 2,  //  <-- ninguno
@@ -414,6 +428,19 @@
 					});
 				}
 			},
+			async borrarInventariO(id, articulo, item){
+				if( confirm(`¿Desea eliminar el inventario: ${articulo}?`) ){
+					let datosEnviar = new FormData();
+					datosEnviar.append('id', id);
+					let queryEliminar = await fetch(this.servidor+'borrarInventario.php',{
+						method:'POST', body: datosEnviar
+					})
+					let respGuardar = await queryEliminar.text().then(response=>{
+						//console.log( response );
+						this.inventarios.splice(item,1);
+					});
+				}
+			}
 			
 
 		},

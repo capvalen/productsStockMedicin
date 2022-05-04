@@ -5,7 +5,9 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Tópicos Panel</title>
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 </head>
 <body>
 <div id="app">
@@ -19,10 +21,16 @@
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="#">topicos</a>
+						<a class="nav-link " aria-current="page" href="productos.php">Productos</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="topicos.php">Tópicos</a>
+						<a class="nav-link active" href="topicos.php">Tópicos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="pedidos.php">Pedidos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="requerimientos.php">Requerimientos</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#">Reportes</a>
@@ -58,7 +66,7 @@
 				<tr v-for="(topico, index) in topicos">
 					<td>{{index+1}}</td>
 					<td class="text-capitalize"><a class="text-decoration-none" :href="'detalleTopico.php?id='+topico.id">{{topico.nombre}}</a></td>
-					<td><button type="button" v-if="topico.nombre!='Ninguno'" class="btn btn-outline-danger btn-sm" @click="borrarTopicos(topico.id, topico.nombre, index)">Borrar</button></td>
+					<td><button type="button" v-if="topico.nombre!='Ninguno'" class="btn btn-outline-danger btn-sm border-0" @click="borrarTopicos(topico.id, topico.nombre, index)"><i class="bi bi-x-circle-fill"></i></button></td>
 				</tr>
 			</tbody>
 
@@ -103,7 +111,8 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				topicos:[], presentaciones:[],
 				nombre:'', presentacion:'1', txtBuscar:''
 			}

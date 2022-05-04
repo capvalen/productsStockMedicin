@@ -5,7 +5,9 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Productos Panel</title>
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 </head>
 <body>
 <div id="app">
@@ -23,6 +25,12 @@
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="topicos.php">Tópicos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="pedidos.php">Pedidos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="requerimientos.php">Requerimientos</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#">Reportes</a>
@@ -62,7 +70,7 @@
 					<td><a class="text-decoration-none" :href="'detalle.php?id='+producto.id">{{producto.nombre}}</a></td>
 					<td>{{producto.presentacion}}</td>
 					<td>{{producto.stock}}</td>
-					<td><button type="button" class="btn btn-outline-danger btn-sm" @click="borrarProducto(producto.id, producto.nombre, index)">Borrar</button></td>
+					<td><button type="button" class="btn btn-outline-danger btn-sm border-0" @click="borrarProducto(producto.id, producto.nombre, index)"><i class="bi bi-x-circle-fill"></i></button></td>
 				</tr>
 			</tbody>
 
@@ -116,7 +124,8 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				productos:[], topicos:[], presentaciones:[],
 				nombre:'', presentacion:'1', txtBuscar:''
 			}
