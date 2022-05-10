@@ -136,8 +136,8 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				//servidor: 'http://localhost/productosMedicina/api/',
-				servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				servidor: 'http://localhost/productosMedicina/api/',
+				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[],
 				solicitante:'', idTopico:-1, comentarios:''
 			}
@@ -196,7 +196,7 @@
 					await respServer.text().then(respuesta =>{
 						console.log( respuesta );
 						if(parseInt(respuesta)>0){
-							alert('Su pedido fue registrado con el código P-'+respuesta);
+							alert('Su pedido fue registrado con el código #'+respuesta);
 						}else{
 							alert('Lo sentimos, hubo un error al guardar, contáctelo con el administrador');
 						}

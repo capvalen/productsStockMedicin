@@ -35,7 +35,7 @@
 							<a class="nav-link" href="pedidos.php">Pedidos</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link active" href="requerimientos.php">Requerimientos</a>
+							<a class="nav-link" href="requerimientos.php">Requerimientos</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="#">Reportes</a>
@@ -47,30 +47,37 @@
 			</div>
 		</nav>
 		<div class="container">
-			<h1>Requerimientos por atender</h1>
-			<p>Realize una búsqueda por código de requerimiento o seleccione de la lista</p>
+			<h1>Detalle del requerimiento</h1>
+			<ul class="list-unstyled mb-3 mb-md-0">
+				<li><strong>Solicitante:</strong> <span class="text-capitalize">{{cabecera.solicitante}}</span></li>
+				<li><strong>Tópico:</strong> <span class="text-capitalize">{{cabecera.nombre}}</span></li>
+				<li><strong>Fecha:</strong> <span class="text-capitalize">{{fechaLatam(cabecera.registro)}}</span></li>
+			</ul>
+			<p class="mt-4">Puede agregar sumar y crear productos o simplemente cargar la data registrada</p>
 			<div class="row">
 				<div class="col-12 col-md-6">
 					<div class="form-floating mb-3">
-					  <input type="email" class="form-control text-center"placeholder="Código de requerimiento. Ejm: 3" autocomplete="off">
-					  <label for="floatingInput">Código de requerimiento. Ejm: 3</label>
+					  <input type="email" class="form-control"placeholder="Búsqueda de un producto ya existente" autocomplete="off">
+					  <label for="floatingInput">Búsqueda de un producto ya existente</label>
 					</div>
 				</div>
 			</div>
 			<table class="table table-hover">
 				<thead>
 					<th>N°</th>
-					<th>Cod.</th>
-					<th>Solicitante</th>
+					<th>Existe</th>
+					<th>Producto</th>
 					<th>Tópico</th>
 					<th>Fecha</th>
 					<th>Obs.</th>
 				</thead>
 				<tbody>
-					<tr v-for="(pedido, index) in pedidos" :key="pedido.id" @click="verDetalle(pedido.id)">
+					<tr v-for="(pedido, index) in pedidos" :key="pedido.id">
 						<td>{{index+1}}</td>
-						<td>#{{pedido.id}}</td>
-						<td class="text-capitalize">{{pedido.solicitante}}</td>
+						<td>
+							<span class="text-danger" v-if="pedido.idProducto=='1'"><i class="bi bi-exclude"></i></span>
+							<span class="text-primary" v-else><i class="bi bi-explicit-fill"></i></span>
+						</td>
 						<td class="text-capitalize">{{pedido.nombre}}</td>
 						<td>{{fechaLatam(pedido.registro)}}</td>
 						<td>{{pedido.comentarios}}</td>
@@ -93,20 +100,30 @@
 			return {
 				servidor: 'http://localhost/productosMedicina/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
-				busqueda:'', disponibles:[], pedidos:[], topicos:[],
+				busqueda:'', disponibles:[], pedidos:[], topicos:[], cabecera:[],
 				solicitante:'', idTopico:-1, comentarios:''
 			}
 		},
-		created(){ },
+		created(){
+			let uri = window.location.search.substring(1); 
+			let params = new URLSearchParams(uri);
+			//console.log(params.get('id'));
+			this.id= params.get('id');
+		},
 		mounted(){
 			this.pedirPedidos();
 		},
 		methods:{
 			async pedirPedidos(){
-				const respTopicos = await fetch(this.servidor + 'pedirPedidos.php');
+				let datas = new FormData();
+				datas.append('id', this.id);
+				const respTopicos = await fetch(this.servidor + 'pedirRequerimientoPorId.php', {
+					method:'POST', body:datas
+				});
 				let datos = await respTopicos.json();
 				console.log( datos );
-				this.pedidos = datos;
+				this.cabecera= datos[0];
+				this.pedidos = datos[1];
 			},
 			async buscarProducto(){
 				if(this.busqueda!=''){
@@ -123,9 +140,6 @@
 				if(fecha!=''){
 					return moment(fecha).format('DD/MM/YYYY h:mm a');
 				}else{return '';}
-			},
-			verDetalle(id){
-				window.location = 'requerimientoDetalle.php?id='+id;
 			}
 		},
 		computed:{
