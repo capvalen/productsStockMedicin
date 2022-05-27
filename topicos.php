@@ -111,8 +111,8 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				//servidor: 'http://localhost/productosMedicina/api/',
-				servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				servidor: 'http://localhost/productsStockMedicin/api/',
+				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				topicos:[], presentaciones:[],
 				nombre:'', presentacion:'1', txtBuscar:''
 			}
@@ -132,7 +132,7 @@
 			async crearTopico(){
 				var datos = new FormData();
 				datos.append('nombre', this.nombre)
-				const respuesta = await fetch(this.servidor + 'crearTopico.php', {
+				const respuesta = await fetch(this.servidor + 'crearTopico.php', { 
 					method: 'POST', body: datos
 				});
 				var idTopico = await respuesta.text();

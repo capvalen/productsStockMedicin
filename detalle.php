@@ -47,8 +47,8 @@
 			<h1>Detalle de <small class="text-muted text-capitalize">{{principal.nombre.toLowerCase()}}</small></h1>
 			<div class="row col">
 				<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-					<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCompras"><i class="bi bi-plus-square"></i> Agregar</button>
-					<button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalRetiros"><i class="bi bi-dash-square"></i> Retirar</button>
+					<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCompras"><i class="bi bi-plus-square"></i> Aumentar</button>
+					<button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalRetiros"><i class="bi bi-send"></i> Mandar</button>
 				</div>
 			</div>
 			<ul class="list-unstyled mb-3 mb-md-0">
@@ -223,7 +223,7 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'http://localhost/productsStockMedicin/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				id:'',
 				principal:[], detalles:[],

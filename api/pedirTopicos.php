@@ -3,6 +3,7 @@ include ("conectkarl.php");
 
 $topicos =[];
 $proveedores = [];
+$colaboradores = [];
 
 
 
@@ -16,6 +17,8 @@ if( $sql->execute()){
 	echo $sql->errorinfo();
 }
 
+$sql->closeCursor();
+
 $sqlNombre=$db->prepare("SELECT * FROM `topicos` where activo = 1 order by nombre asc;");
 if($sqlNombre->execute()):
 	while($rowNombre = $sqlNombre->fetch(PDO::FETCH_ASSOC)){
@@ -26,5 +29,17 @@ else:
 	echo $sqlNombre->errorinfo();
 endif;
 
+$sql->closeCursor();
 
-echo json_encode(array( $proveedores, $topicos ));
+$sqlColaborador=$db->prepare("SELECT * FROM `colaboradores` where activo = 1 order by apellidos asc;");
+if($sqlColaborador->execute()):
+	while($rowColaborador = $sqlColaborador->fetch(PDO::FETCH_ASSOC)){
+		$colaboradores[] = $rowColaborador;
+	}
+else:
+	//echo $sqlNombre->debugDumpParams();
+	echo $sqlColaborador->errorinfo();
+endif;
+
+
+echo json_encode(array( $proveedores, $topicos, $colaboradores ));

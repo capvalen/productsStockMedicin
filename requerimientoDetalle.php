@@ -111,7 +111,7 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'http://localhost/productsStockMedicin/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[], cabecera:[],
 				solicitante:'', idTopico:-1, comentarios:''
@@ -190,14 +190,21 @@
 					}
 				});
 				
-				if(confirm(`Esta por generar el formato de ${indexElegidos.length} productos para el tópico: ${this.cabecera.nombre.toUpperCase()} `)){
+				if(confirm(`Esta por generar para el tópico: ${this.cabecera.nombre.toUpperCase()}, un formato de ${indexElegidos.length} productos.\n ¿Es correcto?`)){
 					let dCabecera = new FormData();
 					dCabecera.append('idPedido', this.id)
+					dCabecera.append('idTopico', this.cabecera.idTopico)
 					dCabecera.append('contenido', JSON.stringify(itemContenido))
 					let respuesta = await fetch(this.servidor + 'guardarRequerimiento.php',{
 						method:'POST', body: dCabecera
 					});
-					console.log( await respuesta.text() );
+					//console.log( );
+					let numPedido = await respuesta.text();
+					if(parseInt(numPedido)>=1){
+						alert('Se realizó el envío de los productos al tópico.')
+						window.location.href="detalleTopico.php?id="+this.cabecera.idTopico;
+					}
+
 					
 				}
 			}

@@ -124,7 +124,7 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'http://localhost/productsStockMedicin/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				productos:[], topicos:[], presentaciones:[],
 				nombre:'', presentacion:'1', txtBuscar:''

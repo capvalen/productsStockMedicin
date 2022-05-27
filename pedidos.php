@@ -82,13 +82,22 @@
 				<div class="col">
 					<div class="card card-body">
 						<p class="fs-2">Hoja de requerimiento</p>
-						<div class="mb-3"><input type="text" class="form-control" placeholder='Nombre del solicitante' v-model="solicitante"></div>
+						<!-- <div class="mb-3"><input type="text" class="form-control" placeholder='Nombre del solicitante' v-model="solicitante"></div> -->
+
 						<div class="form-floating mb-2">
-							<select class="form-select" id="" aria-label=" " v-model="idTopico">
+							<select class="form-select" id="" aria-label=" " v-model="queTopico">
 								<option value="-1" selected>Seleccione uno</option>
-								<option class="text-capitalize" v-for="topico in topicos" :key="topico.id" :value="topico.id">{{topico.nombre}}</option>
+								<option class="text-capitalize" v-for="topico in topicos" :key="topico.id" :value="topico.id" v-show="topico.nombre!='Ninguno'">{{topico.nombre}}</option>
 							</select>
 							<label for="floatingSelect">Tópico final</label>
+						</div>
+
+						<div class="form-floating mb-2">
+							<select class="form-select" id="" aria-label=" " v-model="idSolicitante" @change="cambiarSolicitante($event)">
+								<option value="-1" selected >Seleccione uno</option>
+								<option class="text-capitalize" v-for="colaborador in colaboradores" :key="colaborador.id" :value="colaborador.id" v-show="colaborador.idTopico == queTopico" >{{colaborador.nombres}} {{colaborador.apellidos}}</option>
+							</select>
+							<label for="floatingSelect">Colaborador</label>
 						</div>
 
 						<table class="table-hover table " v-if="pedidos.length>0">
@@ -136,10 +145,10 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'http://localhost/productsStockMedicin/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
-				busqueda:'', disponibles:[], pedidos:[], topicos:[],
-				solicitante:'', idTopico:-1, comentarios:''
+				busqueda:'', disponibles:[], pedidos:[], topicos:[], colaboradores:[],
+				solicitante:'', queTopico:-1, comentarios:'', idSolicitante:-1
 			}
 		},
 		created(){ },
@@ -153,6 +162,7 @@
 				console.log( datosTopicos );
 				
 				this.topicos = datosTopicos[1];
+				this.colaboradores = datosTopicos[2];
 			},
 			async buscarProducto(){
 				if(this.busqueda!=''){
@@ -175,18 +185,30 @@
 					this.pedidos.push({id: this.disponibles[item].id, nombre: this.disponibles[item].nombre, cantidad:1})
 				}
 			},
+			cambiarSolicitante(e){
+
+				//console.log('soy el index '+ e.target.value )
+				
+				if(e.target.value ==-1){
+					this.solicitante=='';
+				}else{
+					queIndex = this.colaboradores.findIndex(colaborador => colaborador.id == e.target.value )
+					this.solicitante = this.colaboradores[queIndex].nombres +" "+this.colaboradores[queIndex].apellidos
+				}
+			},
 			removerItem(index){ this.pedidos.splice(index,1); },
 			async guardarSolicitud(){
-				if(this.idTopico ==-1){
+				if(this.queTopico ==-1){
 					alert('Debe seleccionar un tópico');
-				}else if(this.solicitante==''){
+				}else if(this.idSolicitante==-1){
 					alert('No debe dejar el solicitante en blanco');
 				}else if(this.pedidos.length==0){
 					alert('La lista de productos no puede estar vacía');
 				} else{
 					var datos = new FormData();
-					datos.append('solicitante', this.solicitante)
-					datos.append('idTopico', this.idTopico)
+					datos.append('idSolicitante', this.idSolicitante )
+					datos.append('solicitante', this.solicitante )
+					datos.append('idTopico', this.queTopico)
 					datos.append('comentarios', this.comentarios)
 					datos.append('pedidos', JSON.stringify(this.pedidos))
 	
@@ -197,10 +219,12 @@
 						console.log( respuesta );
 						if(parseInt(respuesta)>0){
 							alert('Su pedido fue registrado con el código #'+respuesta);
+							this.pedidos=[];
+							this.pedidos=[]
+							this.busqueda='';
 						}else{
 							alert('Lo sentimos, hubo un error al guardar, contáctelo con el administrador');
 						}
-						this.pedidos=[];
 					});
 				}
 			}

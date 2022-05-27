@@ -4,8 +4,8 @@ $pedidos = json_decode($_POST['pedidos'], true);
 
 
 
-$sql =$db->prepare("INSERT INTO `pedidos`(`solicitante`, `idTopico`, `comentarios`) VALUES (?, ?, ?);");
-$resp = $sql->execute([ $_POST['solicitante'], $_POST['idTopico'], $_POST['comentarios'] ]);
+$sql =$db->prepare("INSERT INTO `pedidos`(`idSolicitante`, `solicitante`, `idTopico`, `comentarios`) VALUES (?, ?, ?, ?);");
+$resp = $sql->execute([ $_POST['idSolicitante'], $_POST['solicitante'], $_POST['idTopico'], $_POST['comentarios'] ]);
 
 if($resp){
 	//echo 'ok';

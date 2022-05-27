@@ -30,9 +30,6 @@
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="requerimientos.php">Requerimientos</a>
-						</li><li class="nav-item">
-							<a class="nav-link" href="requerimientos.php">Requerimientos</a>
-						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="#">Reportes</a>
 						</li>
@@ -56,6 +53,7 @@
 				<div class="nav nav-tabs mt-3" id="nav-tab" role="tablist">
 					<button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Productos</button>
 					<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Inventario</button>
+					<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-colleages" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Colaboradores</button>
 				</div>
 			</nav>
 
@@ -73,10 +71,16 @@
 								<th>Origen</th>
 								<th>Costo S/</th>
 								<th>Obs.</th>
+								<th>@</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="(detalle, index) in detalles" :key="detalle.id">
+							<tr v-if="detalles.length==0">
+								<td colspan="8">
+									No hay datos registrados
+								</td>
+							</tr>
+							<tr v-else v-for="(detalle, index) in detalles" :key="detalle.id">
 								<td>{{index+1}}</td>
 								<td>{{fechaLatam(detalle.fecha)}}</td>
 								<td class="text-capitalize">{{detalle.nombre.toLowerCase()}}</td>
@@ -85,8 +89,8 @@
 									<span v-else>{{detalle.descripcion}}</span>
 								</td>
 								<td>
-									<span class="text-danger" v-if="detalle.tipo==1">-{{detalle.cantidad}}</span>
-									<span class="text-primary" v-else>+{{detalle.cantidad}}</span>
+									<span class="text-primary" v-if="detalle.descripcion=='Salida'">+{{detalle.cantidad}}</span>
+									<span class="text-danger" v-else>-{{detalle.cantidad}}</span>
 								</td>
 								<td>{{detalle.proveedor}}</td>
 								<td>
@@ -94,6 +98,7 @@
 									<span v-else>{{parseFloat(detalle.costo * detalle.cantidad).toFixed(2)}}</span>
 								</td>
 								<td>{{detalle.observaciones}}</td>
+								<td><button class="btn btn-outline-danger btn-sm" title="Realizar devolución" data-bs-placement="top"  data-bs-toggle="tooltip" @click="devolver(index, detalle.idProducto, detalle.cantidad, detalle.nombre, detalle.id)"><i class="bi bi-arrow-return-left"></i></button></td>
 							</tr>
 						</tbody>
 					</table>
@@ -120,7 +125,12 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="(inventario, index) in inventarios" :key="inventario.id">
+						<tr v-if="inventarios.length==0">
+								<td colspan="8">
+									No hay datos registrados
+								</td>
+							</tr>
+							<tr v-else v-for="(inventario, index) in inventarios" :key="inventario.id">
 								<td>{{index+1}}</td>
 								<td>{{fechaLatam(inventario.fecha)}}</td>
 								<td class="text-capitalize">{{inventario.articulo.toLowerCase()}}</td>
@@ -144,6 +154,31 @@
 							</tr>
 						</tbody>
 					</table>
+				</div>
+				<div class="tab-pane p-3 fade" id="nav-colleages" role="tabpanel" aria-labelledby="nav-profile-tab">
+					<div class="row col">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>N°</th>
+									<th>Nombre</th>
+									<th>@</th>
+								</tr>
+							</thead>
+							<tbody>
+							<tr v-if="colaboradores.length==0">
+								<td colspan="8">
+									No hay datos registrados
+								</td>
+							</tr>
+								<tr v-else v-for="(colaborador, index) in colaboradores" :key="colaborador.id">
+									<td>{{index+1}}</td>
+									<td>{{colaborador.nombres}} {{colaborador.apellidos}}</td>
+									<td><button class="btn btn-outline-danger border-0" @click="eliminarColaborador(colaborador.id, index, colaborador.nombre)"><i class="bi bi-folder-x"></i></button></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 
@@ -245,6 +280,29 @@
 			</div>
 		</div>
 
+		<!-- Modal para devolver maximo -->
+		<div class="modal fade" id="modalDevolver" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Devolución</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>¿Desea devolver del producto "{{nomProducto}}"?</p>
+						<p>Como máximo se puede devolver <span class="fw-bold">{{cantMaxima}}</span></p>
+						<p>Ingrese la cantidad que desea devolver:</p>
+						<input type="number" class="form-control" v-model="cantDevolver" @change="verificarMaximo">
+						<p class="mt-3 mb-1">Motivo de devolución:</p>
+						<input type="text" class="form-control" v-model="obsDevolver" autocomplete="off">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-danger" @click="confirmarDevolucion()">Confirmar devolución</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1051">
 			<div class="toast align-items-center text-white bg-danger border-0" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true">
 				<div class="d-flex">
@@ -265,19 +323,19 @@
 <script src="https://unpkg.com/vue@3"></script>
 <!-- <script src="./js/moment-with-locales.min.js"></script> -->
 <script>
-	var modalInventario, modalRetiros, liveToast;
+	var modalInventario, modalRetiros, liveToast, modalDevolver;
 	var idUsuario =1;
 	var app=Vue.createApp({
 		data() {
 			return {
-				//servidor: 'http://localhost/productosMedicina/api/',
-				servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				servidor: 'http://localhost/productsStockMedicin/api/',
+				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				id:'',
 				principal:[{nombre: '', valorizado:0}], detalles:[], inventarios:[],
-				cantidad: 1, precio:0, proveedores:[], destinos:[],
+				cantidad: 1, precio:0, proveedores:[], destinos:[], colaboradores:[],
 				proveedor:2, destino: 2,  //  <-- ninguno
 				articulo:'', lote:'', vencimiento:'', observacion:'', documento:'', ingreso:moment().format('YYYY-MM-DD'),
-				mensaje:''
+				mensaje:'', cantMaxima:0, nomProducto:'', cantDevolver:1, obsDevolver:'', queId:-1, queIndex:-1, queRegistro:-1
 			}
 		},
 		created(){
@@ -291,6 +349,7 @@
 		},
 		mounted(){
 			modalInventario = new bootstrap.Modal(document.getElementById('modalInventario'));
+			modalDevolver = new bootstrap.Modal(document.getElementById('modalDevolver'));
 			modalRetiros = new bootstrap.Modal(document.getElementById('modalRetiros'));
 			liveToast = new bootstrap.Toast(document.getElementById('liveToast'));
 		},
@@ -303,8 +362,9 @@
 				});
 				let datosTopicos = await respTopicos.json();
 				//console.log( datosTopicos );
-				this.principal.nombre = datosTopicos.nombre;
-				this.principal.valorizado = datosTopicos.valorizado;
+				this.principal.nombre = datosTopicos[0].nombre;
+				this.principal.valorizado = datosTopicos[0].valorizado;
+				this.colaboradores = datosTopicos[1];
 				
 			},
 			async cargar(){
@@ -315,8 +375,20 @@
 				const respuesta = await fetch(this.servidor + 'cargarTopicoDetallesPorId.php',{
 					method:'POST', body: datos
 				})
-				let datosFijos = await respuesta.json();
-				this.detalles = datosFijos;
+				.then( resp => resp.json() )
+				.then(datitos=> {
+					this.detalles = datitos;
+				})
+				.then(()=>{
+					var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+					var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+						return new bootstrap.Tooltip(tooltipTriggerEl)
+					})	
+				})
+				
+				/* let datosFijos = await respuesta.json();
+				this.detalles = datosFijos; */
+				
 
 				//Para inventarios:
 				const respuestaInv = await fetch(this.servidor + 'cargarInventarioPorId.php',{
@@ -440,7 +512,59 @@
 						this.inventarios.splice(item,1);
 					});
 				}
+			},
+			async eliminarColaborador(queId, queIndex, queNombre){
+				if(confirm(`¿Desea borrar al colaborador ${queNombre}?`)){
+					let datos = new FormData();
+					datos.append('id', queId);
+					let queryBorrar = await fetch(this.servidor + 'eliminarColaboradorDeTopico.php',{
+						method:'POST', body:datos
+					});
+					let respEliminar = await queryBorrar.text().then().then(response=>{
+						console.log(response);
+						if(response=='ok'){
+							this.colaboradores.splice(queIndex, 1)
+						}
+					})
+				}
+			},
+			devolver(queIndex, queId, queCantidad, nomProducto, queRegistro){
+				this.cantMaxima=parseInt(queCantidad);
+				this.queIndex = queIndex;
+				this.queId = queId;
+				this.queRegistro = queRegistro;
+				this.nomProducto = nomProducto;
+				modalDevolver.show();
+				//console.log(queIndex, queId, queCantidad)
+			},
+			verificarMaximo(){
+				if(this.cantDevolver > parseInt(this.cantMaxima) ){
+					this.cantDevolver=parseInt(this.cantMaxima);
+				}else if(this.cantDevolver<1){
+					this.cantDevolver=1;
+				}
+			},
+			async confirmarDevolucion(){
+				if(this.obsDevolver==''){
+					alert('Debe ingresar un motivo de devolución')
+				}else{
+					let datos = new FormData();
+					datos.append('idTopico', this.id)
+					//datos.append('idRegistro', this.)
+					datos.append('idProducto', this.queId)
+					datos.append('cantidad', this.cantDevolver)
+					datos.append('observaciones', this.obsDevolver)
+					datos.append('queRegistro', this.queRegistro)
+
+					let queryDevolver = await fetch(this.servidor + 'devolverProducto.php', {
+						method:'POST', body:datos
+					})
+					let respDevolver = await queryDevolver.text().then().then(response=>{
+						console.log(response);
+					})
+				}
 			}
+
 			
 
 		},
