@@ -201,8 +201,10 @@
 					//console.log( );
 					let numPedido = await respuesta.text();
 					if(parseInt(numPedido)>=1){
+						//window.location.href="detalleTopico.php?id="+this.cabecera.idTopico;
+						
+						//window.open("detalleTopico.php?id="+this.cabecera.idTopico, "_blank");
 						alert('Se realizó el envío de los productos al tópico.')
-						window.location.href="detalleTopico.php?id="+this.cabecera.idTopico;
 					}
 
 					

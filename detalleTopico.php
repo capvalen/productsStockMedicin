@@ -550,7 +550,7 @@
 				}else{
 					let datos = new FormData();
 					datos.append('idTopico', this.id)
-					//datos.append('idRegistro', this.)
+					datos.append('idRegistro', this.queRegistro)
 					datos.append('idProducto', this.queId)
 					datos.append('cantidad', this.cantDevolver)
 					datos.append('observaciones', this.obsDevolver)
@@ -560,7 +560,8 @@
 						method:'POST', body:datos
 					})
 					let respDevolver = await queryDevolver.text().then().then(response=>{
-						console.log(response);
+						//console.log(response);
+						location.reload();
 					})
 				}
 			}

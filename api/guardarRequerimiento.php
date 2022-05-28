@@ -28,6 +28,7 @@ if($resp){
 			{$pedido['id']}, 1, {$_POST['idTopico']}, 2, 
 			{$pedido['cantidad']}, now(), now(), 1, 
 			0, '', '', 'Por requerimiento #{$idRequerimiento}');
+			UPDATE `productos` SET `stock` = `stock` - {$pedido['cantidad']} WHERE `productos`.`id` = {$pedido['id']};
 		";
 	}
 	$sqlDetalles = $db->prepare($sqlPedidos);
