@@ -1,3 +1,6 @@
+<?php
+if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

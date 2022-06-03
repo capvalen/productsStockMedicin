@@ -1,3 +1,7 @@
+<?php
+if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
+if($_COOKIE['usuario']=='colaborador'){ header("Location:pedidos.php");}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -157,11 +161,15 @@
 				</div>
 				<div class="tab-pane p-3 fade" id="nav-colleages" role="tabpanel" aria-labelledby="nav-profile-tab">
 					<div class="row col">
+						<div class="d-grid gap-2 d-md-flex justify-content-md-end mb-2">
+							<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNuevoColaborador"><i class="bi bi-plus-square"></i> Agregar</button>
+						</div>
 						<table class="table table-hover">
 							<thead>
 								<tr>
 									<th>N°</th>
 									<th>Nombre</th>
+									<th>DNI</th>
 									<th>@</th>
 								</tr>
 							</thead>
@@ -174,6 +182,7 @@
 								<tr v-else v-for="(colaborador, index) in colaboradores" :key="colaborador.id">
 									<td>{{index+1}}</td>
 									<td>{{colaborador.nombres}} {{colaborador.apellidos}}</td>
+									<td>{{colaborador.dni}}</td>
 									<td><button class="btn btn-outline-danger border-0" @click="eliminarColaborador(colaborador.id, index, colaborador.nombre)"><i class="bi bi-folder-x"></i></button></td>
 								</tr>
 							</tbody>
@@ -210,14 +219,14 @@
 								<input type="number" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="cantidad">
 							</div>
 
-							<div class="mb-3">
+							<!-- <div class="mb-3">
 								<label for="">Costo Und.</label>
 								<input type="number" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="precio">
 							</div>
 							<div class="mb-3">
 								<label for="">N° Documento</label>
 								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="documento">
-							</div>
+							</div> -->
 							<div class="mb-3">
 								<label for="">Observaciones</label>
 								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="observacion">
@@ -302,6 +311,29 @@
 				</div>
 			</div>
 		</div>
+		<!-- Modal para un nuevo colaborador-->
+		<div class="modal fade" id="modalNuevoColaborador" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Nuevo colaborador</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Ingrese el nombre que desea agregar</p>
+						<p>Nombre:</p>
+						<input type="text" class="form-control" v-model="trabajador.nombres">
+						<p>Apellidos:</p>
+						<input type="text" class="form-control" v-model="trabajador.apellidos" >
+						<p>DNI:</p>
+						<input type="text" class="form-control" v-model="trabajador.dni">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-success" @click="crearColaborador()">Agregar</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1051">
 			<div class="toast align-items-center text-white bg-danger border-0" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -323,7 +355,7 @@
 <script src="https://unpkg.com/vue@3"></script>
 <!-- <script src="./js/moment-with-locales.min.js"></script> -->
 <script>
-	var modalInventario, modalRetiros, liveToast, modalDevolver;
+	var modalInventario, modalRetiros, liveToast, modalDevolver, modalNuevoColaborador;
 	var idUsuario =1;
 	var app=Vue.createApp({
 		data() {
@@ -335,7 +367,7 @@
 				cantidad: 1, precio:0, proveedores:[], destinos:[], colaboradores:[],
 				proveedor:2, destino: 2,  //  <-- ninguno
 				articulo:'', lote:'', vencimiento:'', observacion:'', documento:'', ingreso:moment().format('YYYY-MM-DD'),
-				mensaje:'', cantMaxima:0, nomProducto:'', cantDevolver:1, obsDevolver:'', queId:-1, queIndex:-1, queRegistro:-1
+				mensaje:'', cantMaxima:0, nomProducto:'', cantDevolver:1, obsDevolver:'', queId:-1, queIndex:-1, queRegistro:-1,  trabajador:{nombres:'gg', apellidos:'', dni:''}
 			}
 		},
 		created(){
@@ -352,6 +384,7 @@
 			modalDevolver = new bootstrap.Modal(document.getElementById('modalDevolver'));
 			modalRetiros = new bootstrap.Modal(document.getElementById('modalRetiros'));
 			liveToast = new bootstrap.Toast(document.getElementById('liveToast'));
+			modalNuevoColaborador = new bootstrap.Modal(document.getElementById('modalNuevoColaborador'));
 		},
 		methods:{
 			async pedirTopico(){
@@ -564,6 +597,26 @@
 						location.reload();
 					})
 				}
+			},
+			async crearColaborador(){
+				let datos = new FormData();
+				datos.append('idTopico', this.id);
+				datos.append('colaborador', JSON.stringify(this.trabajador));
+				let respServ = await fetch(this.servidor+'crearColaborador.php', {
+					method:'POST', body: datos
+				});
+				let clave = await respServ.text();
+				if( parseInt(clave)>0){
+					this.colaboradores.push({
+						id: clave,
+						dni: this.trabajador.dni,
+						nombres: this.trabajador.nombres,
+						apellidos: this.trabajador.apellidos,
+					})
+					modalNuevoColaborador.hide();
+
+				}
+
 			}
 
 			

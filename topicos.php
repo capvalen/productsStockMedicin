@@ -1,3 +1,7 @@
+<?php
+if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
+if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -49,7 +53,7 @@
 		<h1>Tópicos</h1>
 		<div class="row col">
 			<div class="d-grid gap-1 col-3 ms-auto">
-				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoProducto">Crear producto</button>
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoProducto">Crear tópico</button>
 			</div>
 
 		</div>

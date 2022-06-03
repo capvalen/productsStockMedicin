@@ -1,3 +1,7 @@
+<?php
+if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
+if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -75,7 +79,7 @@
 					<tr v-for="(pedido, index) in pedidos" :key="pedido.id">
 						<td>{{index+1}}</td>
 						<td>
-							<span class="text-danger miToolTip" data-bs-placement="top" title="No existe" v-if="pedido.idProducto=='1'" @click="crearInexistente(index, pedido.id)"><i class="bi bi-exclude"></i></span>
+							<span class="text-danger miToolTip" data-bs-placement="top" title="No existe" v-if="pedido.idProducto=='1'" @click="llamarModalNuevoProducto(index, pedido.id)"><i class="bi bi-exclude"></i></span>
 							<span class="text-success miToolTip" data-bs-placement="top" title="Existe producto" v-else><i class="bi bi-explicit-fill"></i></span>
 						</td>
 						<td class="text-capitalize">{{pedido.nombre}}</td>
@@ -99,6 +103,24 @@
 			</div>
 		</div>
 
+		<!-- Modal -->
+		<div class="modal fade" id="modalNuevoProducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Crear nuevo producto</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Esta por crear el producto:</p>
+						<input type="text" class="form-control" v-model="nuevoNombre">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" @click="crearInexistente()">Crear producto</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 <script src="js/moment.min.js"></script>
@@ -106,7 +128,7 @@
 <script src="https://unpkg.com/vue@3"></script>
 <!-- <script src="./js/moment-with-locales.min.js"></script> -->
 <script>
-	var modalCompras, modalRetiros, liveToast, toolTips;
+	var modalCompras, modalRetiros, liveToast, toolTips, modalNuevoProducto;
 	var idUsuario =1;
 	var app=Vue.createApp({
 		data() {
@@ -114,7 +136,7 @@
 				servidor: 'http://localhost/productsStockMedicin/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[], cabecera:[],
-				solicitante:'', idTopico:-1, comentarios:''
+				solicitante:'', idTopico:-1, comentarios:'', nuevoNombre:'', queRegistro:-1, queItem:-1
 			}
 		},
 		created(){
@@ -124,6 +146,7 @@
 			this.id= params.get('id');
 		},
 		mounted(){
+			modalNuevoProducto = new bootstrap.Modal(document.getElementById('modalNuevoProducto'));
 			this.pedirPedidos().then(()=> this.cargarTools() );
 		},
 		methods:{
@@ -162,20 +185,31 @@
 					return moment(fecha).format('DD/MM/YYYY h:mm a');
 				}else{return '';}
 			},
-			async crearInexistente(item, queRegistro){
-				if(confirm(`¿Desea crear el producto "${this.pedidos[item].nombre.toUpperCase()}"?`)){
+			llamarModalNuevoProducto(item, queRegistro){
+				this.queItem = item;
+				this.queRegistro = queRegistro;
+				this.nuevoNombre = this.pedidos[item].nombre.toUpperCase()
+				modalNuevoProducto.show();
+			},
+			async crearInexistente(){		
+				if(this.nuevoNombre!=''){
 					let datas = new FormData();
-					datas.append('nombre', this.pedidos[item].nombre.toUpperCase() )
+					datas.append('nombre', this.nuevoNombre )
 					datas.append('presentacion', 1 )
-					datas.append('idRegistro', queRegistro )
+					datas.append('idRegistro', this.queRegistro )
 					let respServ = await fetch(this.servidor+'crearProductoDirecto.php',{
 						method: 'POST', body:datas
 					})
 					let idNuevo = await respServ.text();
 					if(parseInt(idNuevo)>0){
-						this.pedidos[item].idProducto=idNuevo;
+						this.pedidos[this.queItem].idProducto=idNuevo;
+						this.pedidos[this.queItem].nombre=this.nuevoNombre;
 					}
+					modalNuevoProducto.hide();
+
 				}
+				//if(confirm(`¿Desea crear el producto "${this.pedidos[item].nombre.toUpperCase()}"?`)){
+				//}
 			},
 			async generarFormato(){
 				//Obtener los items seleccionados

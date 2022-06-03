@@ -1,3 +1,7 @@
+<?php
+if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
+if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
