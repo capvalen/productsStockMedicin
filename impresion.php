@@ -94,15 +94,15 @@
 		<div class="row">
 			<div class="col-4 ms-2 border border-1 border-secondary">
 				<p><strong>Recibí Conforme</strong></p>
-				<p class="text-end">______________________________</p>
-				<p class="text-end">Lic. (a) ___________________________</p>
+				<p class="text-end">___________________________</p>
+				<p class="text-end">Lic. (a) ________________________</p>
 			</div>
 			<div class="col-2"></div>
 			<div class="col">
 				<div class="col me-2 border border-1 border-secondary">
 					<p></p>
-					<p class="text-end">__________________________________________</p>
-					<p class="text-end">Entregado por: ___________________________________</p>
+					<p class="text-end">_______________________________________</p>
+					<p class="text-end">Entregado por: ___________________________</p>
 				</div>
 			</div>
 		</div>
