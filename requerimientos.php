@@ -42,6 +42,12 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 							<a class="nav-link active" href="requerimientos.php">Requerimientos</a>
 						</li>
 						<li class="nav-item">
+							<a class="nav-link" href="proveedores.php">Proveedores</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="presentaciones.php">Presentaciones</a>
+						</li>
+						<li class="nav-item">
 							<a class="nav-link" href="#">Reportes</a>
 						</li>
 						
@@ -95,7 +101,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productsStockMedicin/api/',
+				servidor: 'http://localhost/productosMedicina/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[],
 				solicitante:'', idTopico:-1, comentarios:''
