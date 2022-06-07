@@ -3,7 +3,7 @@ $server="localhost";
 
 /* Net	*/
 $username="root";
-$password="*123456*";
+$password="";
 $datos= "kardexperu";
 
 $cadena= mysqli_connect($server,$username,$password)or die("No se ha podido establecer la conexion");
