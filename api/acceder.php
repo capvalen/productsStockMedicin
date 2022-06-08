@@ -7,8 +7,8 @@ if($_POST['usuario']=='-1'){
 	$resp = $sql->execute([ $_POST['clave'] ]);
 	//echo $sql->debugDumpParams();
 	if( $sql->rowCount()==1){
-		echo 'admin';
 		setcookie("usuario", 'admin', time()+(60*60*24*30), '/');
+		echo 'admin';
 	}else{
 		echo 'nada';
 	}
@@ -17,8 +17,8 @@ if($_POST['usuario']=='-1'){
 	$resp = $sql->execute([ $_POST['clave'] ]);
 	//echo $sql->debugDumpParams();
 	if( $sql->rowCount()==1){
-		echo 'colaborador';
 		setcookie("usuario", 'colaborador', time()+(60*60*24*30), '/');
+		echo 'colaborador';
 	}else{
 		echo 'nada';
 	}
