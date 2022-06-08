@@ -11,14 +11,14 @@ if($resp){
 	
 	$sqlPedidos='';
 
-	foreach( $pedidos  as $pedido){
+/* 	foreach( $pedidos  as $pedido){
 		$sqlPedidos .= "INSERT INTO `requerimientos_detalle`( `idRequerimiento`, `idProducto`, `cantidad`) VALUES ({$idRequerimiento}, {$pedido['id']}, {$pedido['cantidad']} ); ";
 	}
 	$sqlDetalles = $db->prepare($sqlPedidos);
 	$respDetalles = $sqlDetalles->execute();
 	
 	$sqlPedidos ='';
-	$sqlDetalles->closeCursor();
+	$sqlDetalles->closeCursor(); */
 
 	foreach( $pedidos  as $pedido){
 		$sqlPedidos .= "INSERT INTO `requerimientos_detalle`( `idRequerimiento`, `idProducto`, `cantidad`) VALUES ({$idRequerimiento}, {$pedido['id']}, {$pedido['cantidad']} );

@@ -144,7 +144,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 						<div class="d-flex justify-content-center"><img src="imgs/guardado.jpg" alt=""></div>
 						<p class="mb-0">Su pedido fue atentido y guardado:</p>
 						<p class="mb-0">Puede ver su pedido en el siguiente link:</p>
-						<p class="fs-3 primary-text text-center"><a :href="'impresion.php?id='+idRespuesta">Requerimiento #29</a></p>
+						<p class="fs-3 primary-text text-center"><a :href="'impresion.php?id='+idRespuesta">Requerimiento #{{idRespuesta}}</a></p>
 					</div>
 				
 				</div>
@@ -164,8 +164,8 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
-				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'https://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[], cabecera:[],
 				solicitante:'', idTopico:-1, comentarios:'', nuevoNombre:'', queRegistro:-1, queItem:-1, idRespuesta:-1
 			}

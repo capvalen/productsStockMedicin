@@ -129,8 +129,8 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
-				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'https://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[], cabecera:[],
 				solicitante:'', idTopico:-1, comentarios:'',
 				meses:['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']

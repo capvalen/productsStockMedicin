@@ -133,8 +133,8 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
-				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'https://perumedical.infocatsoluciones.com/api/',
 				productos:[], topicos:[], presentaciones:[],
 				nombre:'', presentacion:'1', txtBuscar:''
 			}

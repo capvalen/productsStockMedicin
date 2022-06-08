@@ -370,8 +370,8 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:pedidos.php");}
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
-				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'https://perumedical.infocatsoluciones.com/api/',
 				id:'',
 				principal:[{nombre: '', valorizado:0}], detalles:[], inventarios:[],
 				cantidad: 1, precio:0, proveedores:[], destinos:[], colaboradores:[],

@@ -142,6 +142,26 @@ if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
 			
 		</div>
 
+		<!-- Modal felicitaciones -->
+		<div class="modal fade" id="modalFelicitaciones" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Pedido atendido</h5>
+					</div>
+					<div class="modal-body">
+						<div class="d-flex justify-content-center"><img src="imgs/guardado.jpg" alt=""></div>
+						<p class="mb-0">Su pedido guardado.</p>
+						<p class="mb-0">Su administrador pronto atenderá su pedido con el código</p>
+						<p class="fs-3 primary-text text-center mb-0">Pedido #{{idRespuesta}}</p>
+						<p class="text-center fw-bold">Gracias por ser parte de Perú medical</p>
+						<center><button class="btn btn-primary" @click="recargar()">Nueva Solicitud</button></center>
+					</div>
+				
+				</div>
+			</div>
+		</div>
+
 		
 	</div>
 
@@ -149,19 +169,20 @@ if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
 <script src="https://unpkg.com/vue@3"></script>
 <!-- <script src="./js/moment-with-locales.min.js"></script> -->
 <script>
-	var modalCompras, modalRetiros, liveToast;
+	var modalCompras, modalRetiros, liveToast, modalFelicitaciones;
 	var idUsuario =1;
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
-				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'https://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[], colaboradores:[],
-				solicitante:'', queTopico:-1, comentarios:'', idSolicitante:-1
+				solicitante:'', queTopico:-1, comentarios:'', idSolicitante:-1, idRespuesta:''
 			}
 		},
 		created(){ },
 		mounted(){
+			modalFelicitaciones = new bootstrap.Modal(document.getElementById('modalFelicitaciones'));
 			this.pedirTopicos();
 		},
 		methods:{
@@ -185,6 +206,7 @@ if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
 					
 				}
 			},
+			recargar(){ location.reload(); },
 			agregarCanasta(id, item){
 				
 				if(id=='1'){
@@ -227,10 +249,12 @@ if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
 					await respServer.text().then(respuesta =>{
 						console.log( respuesta );
 						if(parseInt(respuesta)>0){
-							alert('Su pedido fue registrado con el código #'+respuesta);
 							this.pedidos=[];
 							this.pedidos=[]
 							this.busqueda='';
+							//alert('Su pedido fue registrado con el código #'+respuesta);
+							this.idRespuesta = respuesta;
+							modalFelicitaciones.show();
 						}else{
 							alert('Lo sentimos, hubo un error al guardar, contáctelo con el administrador');
 						}

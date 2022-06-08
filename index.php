@@ -27,7 +27,9 @@
 				<h1 class="text-center text-primary fs-2 my-4">Bienvenido al sistema de Kardex Perú Médical</h1>
 				<p>Ingrese sus credenciales para acceder</p>
 				<select name="" class="form-select text-capitalize" v-model="usuario">
-					<option class="text-capitalize" v-for="colaborador in colaboradores" :key="colaborador.id" :value="colaborador.id">{{colaborador.nombres}} {{colaborador.apellidos}}</option>
+					<!-- <option class="text-capitalize" v-for="colaborador in colaboradores" :key="colaborador.id" :value="colaborador.id">{{colaborador.nombres}} {{colaborador.apellidos}}</option> -->
+					<option value="-1">Administrador</option>
+					<option value="1">Colaborador</option>
 				</select>
 				<p class="mt-2 mb-0">Clave:</p>
 				<input type="password" class="form-control" autocomplete="off" v-model="clave">
@@ -44,8 +46,8 @@
 	var app=Vue.createApp({
 		data() {
 			return {
-				servidor: 'http://localhost/productosMedicina/api/',
-				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
+				//servidor: 'http://localhost/productosMedicina/api/',
+				servidor: 'https://perumedical.infocatsoluciones.com/api/',
 				colaboradores:[], usuario:-1, clave:''
 			}
 		},
@@ -67,6 +69,7 @@
 				let respServ = await fetch(this.servidor+'acceder.php',{
 					method:'POST', body:datos
 				});
+				//console.log( await respServ.text() );
 				switch (await respServ.text()) {
 					case 'admin': window.location.href = "productos.php"; break;
 					case 'colaborador': window.location.href = "pedidos.php"; break;
