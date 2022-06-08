@@ -43,7 +43,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 						<a class="nav-link" href="presentaciones.php">Presentaciones</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">Reportes</a>
+						<a class="nav-link" href="reportes.php">Reportes</a>
 					</li>
 					
 				</ul>

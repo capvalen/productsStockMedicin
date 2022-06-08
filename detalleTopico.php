@@ -42,7 +42,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:pedidos.php");}
 							<a class="nav-link" href="presentaciones.php">Presentaciones</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">Reportes</a>
+							<a class="nav-link" href="reportes.php">Reportes</a>
 						</li>
 						
 					</ul>
@@ -225,7 +225,10 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:pedidos.php");}
 								<label for="">Cantidad</label>
 								<input type="number" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="cantidad">
 							</div>
-
+							<div class="mb-3">
+								<label for="">Código de barras</label>
+								<input type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="codPersonalizado">
+							</div>
 							<!-- <div class="mb-3">
 								<label for="">Costo Und.</label>
 								<input type="number" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" v-model="precio">
@@ -374,7 +377,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:pedidos.php");}
 				cantidad: 1, precio:0, proveedores:[], destinos:[], colaboradores:[],
 				proveedor:2, destino: 2,  //  <-- ninguno
 				articulo:'', lote:'', vencimiento:'', observacion:'', documento:'', ingreso:moment().format('YYYY-MM-DD'),
-				mensaje:'', cantMaxima:0, nomProducto:'', cantDevolver:1, obsDevolver:'', queId:-1, queIndex:-1, queRegistro:-1,  trabajador:{nombres:'gg', apellidos:'', dni:''}
+				mensaje:'', cantMaxima:0, nomProducto:'', cantDevolver:1, obsDevolver:'', queId:-1, queIndex:-1, queRegistro:-1,  trabajador:{nombres:'gg', apellidos:'', dni:''}, codPersonalizado:''
 			}
 		},
 		created(){
@@ -464,6 +467,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:pedidos.php");}
 					datosEnviar.append('documento', this.documento);
 					datosEnviar.append('observacion', this.observacion);
 					datosEnviar.append('articulo', this.articulo);
+					datosEnviar.append('codPersonalizado', this.codPersonalizado);
 					datosEnviar.append('movimiento', 5); //entrada de inventario
 					datosEnviar.append('usuario', idUsuario);
 	
@@ -477,7 +481,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:pedidos.php");}
 							idProducto: 1,
 							idProveedor: this.id,
 							idMovimiento: 5, //ingreso
-							tipo: 1, //suma
+							tipo: 2, //suma
 							descripcion: 'Entrada de inventario',
 							cantidad: this.cantidad,
 							fecha: this.ingreso,

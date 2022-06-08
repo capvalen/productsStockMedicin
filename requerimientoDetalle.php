@@ -49,7 +49,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 							<a class="nav-link" href="presentaciones.php">Presentaciones</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">Reportes</a>
+							<a class="nav-link" href="reportes.php">Reportes</a>
 						</li>
 						
 					</ul>
@@ -71,6 +71,11 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 						<input type="email" class="form-control"placeholder="Búsqueda de un producto ya existente" autocomplete="off">
 						<label for="floatingInput">Búsqueda de un producto ya existente</label>
 					</div>
+				</div>
+			</div>
+			<div class="row" >
+				<div class="col d-flex justify-content-end" >
+					<button v-if="cabecera.atendido=='0'" class="btn btn-danger" @click="anularFormato()"><i class="bi bi-envelope-paper"></i> Anular pedido</button>
 				</div>
 			</div>
 			<table class="table table-hover">
@@ -102,9 +107,10 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 					</tr>
 				</tbody>
 			</table>
-			<div class="row">
-				<div class="col d-flex justify-content-end">
-					<button class="btn btn-primary" @click="generarFormato()">Entregar y generar formato</button>
+			<div class="row" >
+				<div class="col d-flex justify-content-end" v-if="cabecera.activo=='1'">
+					<button v-if="cabecera.atendido=='0'" class="btn btn-primary" @click="generarFormato()"><i class="bi bi-envelope-paper"></i> Entregar  formato</button>
+					<a v-if="cabecera.atendido=='1'" class="btn btn-success" :href="'impresion.php?idTopico='+id" ><i class="bi bi-paperclip"></i> Ver formato generado</a>
 				</div>
 			</div>
 		</div>
@@ -127,6 +133,25 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 				</div>
 			</div>
 		</div>
+		<!-- Modal felicitaciones -->
+		<div class="modal fade" id="modalFelicitaciones" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Pedido atendido</h5>
+					</div>
+					<div class="modal-body">
+						<div class="d-flex justify-content-center"><img src="imgs/guardado.jpg" alt=""></div>
+						<p class="mb-0">Su pedido fue atentido y guardado:</p>
+						<p class="mb-0">Puede ver su pedido en el siguiente link:</p>
+						<p class="fs-3 primary-text text-center"><a :href="'impresion.php?id='+idRespuesta">Requerimiento #29</a></p>
+					</div>
+				
+				</div>
+			</div>
+		</div>
+	</div>
+
 	</div>
 
 <script src="js/moment.min.js"></script>
@@ -134,7 +159,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 <script src="https://unpkg.com/vue@3"></script>
 <!-- <script src="./js/moment-with-locales.min.js"></script> -->
 <script>
-	var modalCompras, modalRetiros, liveToast, toolTips, modalNuevoProducto;
+	var modalCompras, modalRetiros, liveToast, toolTips, modalNuevoProducto, modalFelicitaciones;
 	var idUsuario =1;
 	var app=Vue.createApp({
 		data() {
@@ -142,7 +167,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 				servidor: 'http://localhost/productosMedicina/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[], cabecera:[],
-				solicitante:'', idTopico:-1, comentarios:'', nuevoNombre:'', queRegistro:-1, queItem:-1
+				solicitante:'', idTopico:-1, comentarios:'', nuevoNombre:'', queRegistro:-1, queItem:-1, idRespuesta:-1
 			}
 		},
 		created(){
@@ -153,6 +178,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 		},
 		mounted(){
 			modalNuevoProducto = new bootstrap.Modal(document.getElementById('modalNuevoProducto'));
+			modalFelicitaciones = new bootstrap.Modal(document.getElementById('modalFelicitaciones'));
 			this.pedirPedidos().then(()=> this.cargarTools() );
 		},
 		methods:{
@@ -241,13 +267,29 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 					//console.log( );
 					let numPedido = await respuesta.text();
 					if(parseInt(numPedido)>=1){
+						this.idRespuesta = numPedido;
 						//window.location.href="detalleTopico.php?id="+this.cabecera.idTopico;
 						
 						//window.open("detalleTopico.php?id="+this.cabecera.idTopico, "_blank");
-						alert('Se realizó el envío de los productos al tópico.')
+						//alert('Se realizó el envío de los productos al tópico.')
+						//window.open("impresion.php?idPedido="+this.id, "_blank");
+						modalFelicitaciones.show();
+					}else{
+						alert('Hubo un error');
+					}		
+				}
+			},
+			async anularFormato(){
+				if(confirm('¿Desea anular el pedido?')){
+					let datas = new FormData();
+					datas.append('id', this.id )
+					let respServ = await fetch(this.servidor+'anularFormato.php',{
+						method: 'POST', body:datas
+					})
+					if(await respServ.text()=='ok'){
+						alert('Pedido anulado con éxito')
+						this.cabecera.atendido=2;
 					}
-
-					
 				}
 			}
 		},

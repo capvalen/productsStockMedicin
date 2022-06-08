@@ -48,7 +48,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 							<a class="nav-link" href="presentaciones.php">Presentaciones</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">Reportes</a>
+							<a class="nav-link" href="reportes.php">Reportes</a>
 						</li>
 						
 					</ul>
@@ -62,7 +62,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 			<div class="row">
 				<div class="col-12 col-md-6">
 					<div class="form-floating mb-3">
-					  <input type="email" class="form-control text-center"placeholder="Código de requerimiento. Ejm: 3" autocomplete="off">
+					  <input type="text" class="form-control text-center"placeholder="Código de requerimiento. Ejm: 3" autocomplete="off" @keyup.enter="buscarRequerimiento()" v-model="buscar">
 					  <label for="floatingInput">Código de requerimiento. Ejm: 3</label>
 					</div>
 				</div>
@@ -77,7 +77,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 					<th>Obs.</th>
 				</thead>
 				<tbody>
-					<tr v-for="(pedido, index) in pedidos" :key="pedido.id" @click="verDetalle(pedido.id)">
+					<tr v-for="(pedido, index) in pedidos" :key="pedido.id" @click="verDetalle(pedido.id, pedido.atendido)">
 						<td>{{index+1}}</td>
 						<td>#{{pedido.id}}</td>
 						<td class="text-capitalize">{{pedido.solicitante}}</td>
@@ -104,7 +104,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 				servidor: 'http://localhost/productosMedicina/api/',
 				//servidor: 'http://perumedical.infocatsoluciones.com/api/',
 				busqueda:'', disponibles:[], pedidos:[], topicos:[],
-				solicitante:'', idTopico:-1, comentarios:''
+				solicitante:'', idTopico:-1, comentarios:'', buscar:''
 			}
 		},
 		created(){ },
@@ -134,8 +134,22 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 					return moment(fecha).format('DD/MM/YYYY h:mm a');
 				}else{return '';}
 			},
-			verDetalle(id){
-				window.location = 'requerimientoDetalle.php?id='+id;
+			verDetalle(id, atendido){
+				//console.log( atendido );
+				if(atendido =='0'){
+					window.location = 'requerimientoDetalle.php?id='+id;
+				}else if(atendido=='1'){
+					window.location = 'impresion.php?id='+id;
+
+				}
+			},
+			async buscarRequerimiento(){
+				let datos = new FormData();
+				datos.append('textoId', this.buscar);
+				let respuesta = await fetch(this.servidor+'buscarRequerimiento.php',{
+					method:'POST', body:datos
+				});
+				this.pedidos = await respuesta.json();
 			}
 		},
 		computed:{

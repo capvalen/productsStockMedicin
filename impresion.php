@@ -1,3 +1,16 @@
+<?php 
+include './api/conectkarl.php';
+$id='';
+if(isset($_GET['idPedido'])){
+	$sql = $db->prepare("SELECT * FROM `requerimientos` where idPedido = ? ;");
+	if($sql->execute([ $_GET['idPedido'] ])){
+		$row = $sql->fetch(PDO::FETCH_ASSOC);
+		//var_dump( $row['id'] );
+		if( $sql->rowCount()==1){ $id = $row['id']; }
+	}
+}
+if(isset($_GET['id'])){ $id = $_GET['id']; }
+ ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,7 +42,7 @@
 		</div>
 	</nav>
 	<div class="container-fluid container-lg my-3" id="app">
-		<table class="table">
+		<table class="table mb-0">
 			<tbody class="border-none" style="border: transparent;">
 				<tr>
 					<td class="col-3 p-0 ">
@@ -37,14 +50,14 @@
 					</td>
 					<td>
 						<h1 class="fs-4 text-center">Acta de entrega de medicamentos y otros</h1>
-						<h2 class="fs-4 text-danger text-center mb-0">N° S-{{cabecera.codificado}}</h2>
+						<h2 class="fs-4 text-danger text-center mb-0">N° R-{{cabecera.codificado}}</h2>
 					</td>
 					<td class="col-4 p-0 ">
 						<table class="table table-bordered border-secondary">
 							<tbody>
 								<tr> <td class="py-0 ps-0 pe-2 text-end"><strong>Mes:</strong></td> <td class="col-7 p-1"> <span>{{retornarMes(cabecera.mes-1)}}</span></td> </tr>
 								<tr> <td class="py-0 ps-0 pe-2 text-end"><strong>Aprobado:</strong></td> <td class="col-7 p-0 ps-1"> <span>Elver Mateo</span></td> </tr>
-								<tr> <td class="py-0 ps-0 pe-2 text-end"><strong>Elaborado:</strong></td> <td class="col-7 p-1"><span>{{cabecera.solicitante}}</span></td> </tr>
+								<tr> <td class="py-0 ps-0 pe-2 text-end"><strong>Elaborado:</strong></td> <td class="col-7 p-1"><span class="text-capitalize">{{cabecera.solicitante}}</span></td> </tr>
 								<tr> <td class="py-0 ps-0 pe-2 text-end"><strong>Fecha:</strong></td> <td class="col-7 p-0 ps-1"> <span>{{cabecera.registro}}</span></td> </tr>
 							</tbody>
 						</table>
@@ -66,7 +79,7 @@
 					<th class="text-center">20563249847</th>
 					<th class="text-center">Av. Universitaria Mz. O Lte. 47 Urb. Pacífico - SMP</th>
 					<th class="text-center">Servicios Pre - Hospitalarios de Urgencias</th>
-					<th class="text-center">{{cabecera.nombre}}</th>
+					<th class="text-center text-capitalize">{{cabecera.nombre}}</th>
 				</tr>
 			</tbody>
 		</table>
@@ -124,10 +137,10 @@
 			}
 		},
 		created(){
-			let uri = window.location.search.substring(1); 
-			let params = new URLSearchParams(uri);
+			//let uri = window.location.search.substring(1); 
+			//let params = new URLSearchParams(uri);
 			//console.log(params.get('id'));
-			this.id= params.get('id');
+			this.id= '<?= $id; ?>';//params.get('id')
 		},
 		mounted(){
 			this.llamarDatos();
