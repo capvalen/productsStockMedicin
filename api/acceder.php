@@ -16,7 +16,7 @@ if($_POST['usuario']=='-1'){
 	$sql=$db->prepare("SELECT * FROM `colaboradores` where dni = ?;");
 	$resp = $sql->execute([ $_POST['clave'] ]);
 	//echo $sql->debugDumpParams();
-	if( $sql->rowCount()==1){
+	if( $sql->rowCount()>=1){
 		setcookie("usuario", 'colaborador', time()+(60*60*24*30), '/');
 		echo 'colaborador';
 	}else{
