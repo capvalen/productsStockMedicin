@@ -79,11 +79,15 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 					<td><a class="text-decoration-none" :href="'detalle.php?id='+producto.id">{{producto.nombre}}</a></td>
 					<td>{{producto.presentacion}}</td>
 					<td>{{producto.stock}}</td>
-					<td><button type="button" class="btn btn-outline-danger btn-sm border-0" @click="borrarProducto(producto.id, producto.nombre, index)"><i class="bi bi-x-circle-fill"></i></button></td>
+					<td>
+						<button type="button" class="btn btn-outline-primary btn-sm border-0" @click="editarProducto(producto.id, producto.nombre, index)"><i class="bi bi-pencil-square"></i></button>
+						<button type="button" class="btn btn-outline-danger btn-sm border-0" @click="borrarProducto(producto.id, producto.nombre, index)"><i class="bi bi-x-circle-fill"></i></button>
+					</td>
 				</tr>
 			</tbody>
 
 		</table>
+		<p></p>
 
 		<!-- Modal -->
 		<div class="modal fade" id="modalNuevoProducto" tabindex="-1" aria-hidden="true">
@@ -120,6 +124,24 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 
 
 
+	<!-- Modal para editar un producto -->
+	<div class="modal fade" id="modalEditarProducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Editar producto</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Nombre del producto:</p>
+						<input type="text" class="form-control" v-model="nuevoNombre">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" @click="actualizarProducto()">Editar producto</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
 
@@ -129,19 +151,20 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 <script src="https://unpkg.com/vue@3"></script>
 	
 <script>
-	var modalNuevoProducto;
+	var modalNuevoProducto, modalEditarProducto;
 	var app=Vue.createApp({
 		data() {
 			return {
 				//servidor: 'http://localhost/productosMedicina/api/',
 				servidor: 'https://perumedical.infocatsoluciones.com/api/',
 				productos:[], topicos:[], presentaciones:[],
-				nombre:'', presentacion:'1', txtBuscar:''
+				nombre:'', presentacion:'1', txtBuscar:'', nuevoNombre:'', queId:-1, queIndex:-1
 			}
 		},
 		mounted(){
 			this.cargar();
 			modalNuevoProducto = new bootstrap.Modal(document.getElementById('modalNuevoProducto'));
+			modalEditarProducto = new bootstrap.Modal(document.getElementById('modalEditarProducto'));
 		},
 		methods:{
 			async cargar(){
@@ -194,6 +217,24 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 				if(this.txtBuscar==''){
 					this.cargar();
 				}
+			},
+			editarProducto(id, nombre, index){
+				this.nuevoNombre = nombre;
+				this.queId = id;
+				this.queIndex = index;
+				modalEditarProducto.show();
+			},
+			async actualizarProducto(){
+				let datos = new FormData();
+				datos.append('id', this.queId)
+				datos.append('nuevoNombre', this.nuevoNombre)
+				let respServ = await fetch(this.servidor + 'actualizarProducto.php',{
+					method:'POST', body: datos
+				});
+				if(await respServ.text()=='ok'){
+					this.productos[this.queIndex].nombre = this.nuevoNombre;
+				}
+				modalEditarProducto.hide();
 			}
 
 		}

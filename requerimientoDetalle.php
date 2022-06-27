@@ -90,8 +90,10 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 					<tr v-for="(pedido, index) in pedidos" :key="pedido.id">
 						<td>{{index+1}}</td>
 						<td>
-							<span class="text-danger miToolTip" data-bs-placement="top" title="No existe" v-if="pedido.idProducto=='1'" @click="llamarModalNuevoProducto(index, pedido.id)"><i class="bi bi-exclude"></i></span>
-							<span class="text-success miToolTip" data-bs-placement="top" title="Existe producto" v-else><i class="bi bi-explicit-fill"></i></span>
+							<div v-if="cabecera.atendido=='1'">
+								<span class="text-danger miToolTip" data-bs-placement="top" title="No existe" v-if="pedido.idProducto=='1'" @click="llamarModalNuevoProducto(index, pedido.id)"><i class="bi bi-exclude"></i></span>
+								<span class="text-success miToolTip" data-bs-placement="top" title="Existe producto" v-else><i class="bi bi-explicit-fill"></i></span>
+							</div>
 						</td>
 						<td class="text-capitalize">{{pedido.nombre}}</td>
 						<td class="col-sm-1"><input type="number" class="form-control text-center" value="1" v-model="pedido.cantidad" min="1" autocomplete="off"></td>
@@ -115,7 +117,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 			</div>
 		</div>
 
-		<!-- Modal -->
+		<!-- Modal para crear nuevo producto -->
 		<div class="modal fade" id="modalNuevoProducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -233,6 +235,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 						method: 'POST', body:datas
 					})
 					let idNuevo = await respServ.text();
+					console.log(idNuevo);
 					if(parseInt(idNuevo)>0){
 						this.pedidos[this.queItem].idProducto=idNuevo;
 						this.pedidos[this.queItem].nombre=this.nuevoNombre;

@@ -377,7 +377,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:pedidos.php");}
 				cantidad: 1, precio:0, proveedores:[], destinos:[], colaboradores:[],
 				proveedor:2, destino: 2,  //  <-- ninguno
 				articulo:'', lote:'', vencimiento:'', observacion:'', documento:'', ingreso:moment().format('YYYY-MM-DD'),
-				mensaje:'', cantMaxima:0, nomProducto:'', cantDevolver:1, obsDevolver:'', queId:-1, queIndex:-1, queRegistro:-1,  trabajador:{nombres:'gg', apellidos:'', dni:''}, codPersonalizado:''
+				mensaje:'', cantMaxima:0, nomProducto:'', cantDevolver:1, obsDevolver:'', queId:-1, queIndex:-1, queRegistro:-1,  trabajador:{nombres:'', apellidos:'', dni:''}, codPersonalizado:''
 			}
 		},
 		created(){
