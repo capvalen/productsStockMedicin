@@ -65,7 +65,7 @@ if( @!isset($_COOKIE["usuario"]) ){ header("Location:index.php");}
 
 							<div class="input-group mb-3">
 								<input type="text" class="form-control" placeholder="Buscar producto" @keyup.enter="buscarProducto()" v-model="busqueda" >
-								<button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="bi bi-search"></i></button>
+								<button class="btn btn-outline-secondary" @click="buscarProducto()" type="button" id="button-addon2"><i class="bi bi-search"></i></button>
 							</div>
 							<p><i class="bi bi-info-circle-fill"></i> En caso de no existir el producto, seleccione <em>Ninguno</em> para que ingrese libremente un producto nuevo</p>
 							<table class=" table table-hover" id="tablePedido">

@@ -24,7 +24,9 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }
 </head>
 <body>
 	<style>
-		.trDatos>th{font-size: 0.8rem;}
+		p, td{font-size: 0.8rem;}
+		.trDatos>th, #tableDatosIzq{font-size: 0.6rem;}
+		td{padding:0.2rem!important}
 	</style>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light d-print-none">
 		<div class="container-fluid px-5">
@@ -54,7 +56,7 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }
 					</td>
 					<td class="col-4 p-0 ">
 						<table class="table table-bordered border-secondary">
-							<tbody>
+							<tbody id="tableDatosIzq">
 								<tr> <td class="py-0 ps-0 pe-2 text-end"><strong>Mes:</strong></td> <td class="col-7 p-1"> <span>{{retornarMes(cabecera.mes-1)}}</span></td> </tr>
 								<tr> <td class="py-0 ps-0 pe-2 text-end"><strong>Aprobado:</strong></td> <td class="col-7 p-0 ps-1"> <span>Elver Mateo</span></td> </tr>
 								<tr> <td class="py-0 ps-0 pe-2 text-end"><strong>Elaborado:</strong></td> <td class="col-7 p-1"><span class="text-capitalize">{{cabecera.solicitante}}</span></td> </tr>

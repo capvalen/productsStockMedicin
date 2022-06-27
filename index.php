@@ -12,7 +12,6 @@
 	<style>
 		#logo{
 			width: 250px;
-
 		}
 	</style>
 	<div id="app" class="container p-5  ">
