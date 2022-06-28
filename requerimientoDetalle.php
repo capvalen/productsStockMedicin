@@ -90,7 +90,7 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 					<tr v-for="(pedido, index) in pedidos" :key="pedido.id">
 						<td>{{index+1}}</td>
 						<td>
-							<div v-if="cabecera.atendido=='1'">
+							<div v-if="cabecera.atendido=='0'">
 								<span class="text-danger miToolTip" data-bs-placement="top" title="No existe" v-if="pedido.idProducto=='1'" @click="llamarModalNuevoProducto(index, pedido.id)"><i class="bi bi-exclude"></i></span>
 								<span class="text-success miToolTip" data-bs-placement="top" title="Existe producto" v-else><i class="bi bi-explicit-fill"></i></span>
 							</div>

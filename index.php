@@ -35,7 +35,7 @@
 				<div class="d-grid gap-2 d-flex justify-content-center mt-2">
 					<button type="button" class="btn btn-outline-primary" @click="acceder()"><i class="bi bi-postcard"></i> Acceder al sistema</button>
 				</div>
-				<p class="mt-5">Versión: 1.11.5 - Build: 22.0627</p>
+				<p class="mt-5">Versión: 1.11.6 - Build: 22.0628</p>
 			</div>
 		</div>
 	</div>

@@ -11,12 +11,15 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 	<title>Productos Panel</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-html5-2.2.3/datatables.min.css"/>
+
 </head>
 <body>
 <style>
 	#divResultadoProductos tbody>tr, #limpiarFiltro{
 		cursor:pointer;
 	}
+	.dataTables_info{display: none;}
 </style>
 <div id="app">
 
@@ -115,8 +118,8 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 						</div>
 
 						<div class="input-group mb-3">
-						  <input type="text" class="form-control" placeholder="Buscar por nombre" v-model="texto" @keyup.enter="buscarProducto()">
-						  <button class="btn btn-outline-secondary" @click="buscarProducto()" type="button" ><i class="bi bi-search"></i></button>
+							<input type="text" class="form-control" placeholder="Buscar por nombre" v-model="texto" @keyup.enter="buscarProducto()">
+							<button class="btn btn-outline-secondary" @click="buscarProducto()" type="button" ><i class="bi bi-search"></i></button>
 						</div>
 
 						<div id="divResultadoProductos">
@@ -150,7 +153,12 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/vue@3"></script>
 <script src="js/moment.min.js"></script>
-	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-html5-2.2.3/datatables.min.js"></script>
+
 <script>
 	var modalBuscarProducto;
 	var app=Vue.createApp({
@@ -198,6 +206,20 @@ if($_COOKIE['usuario']=='colaborador'){ header("Location:index.php");}
 				});
 				//console.log( await respServ.text() );
 				divResultados.innerHTML=await respServ.text();
+				$( '#divResultados .table' ).DataTable({
+					dom: 'Bfrtip',
+					searching: false,
+					paging: false,
+					columnDefs:[{
+            targets: "_all",
+            sortable: false
+        	}],
+					buttons: [
+						{ extend: 'copyHtml5', text: 'Copiar'},
+						{ extend: 'excelHtml5', text: 'MS Excel' }
+					]
+				});
+
 			},
 			cambiarTipoProducto(){
 				this.instrucciones2='';
